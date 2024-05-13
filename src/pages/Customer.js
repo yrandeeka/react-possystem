@@ -1,27 +1,23 @@
 import { useEffect, useState } from "react";
-import "../index.css";
-import { Link } from "react-router-dom";
 import { create, deleteData, getAllData, update } from "../utils/Apiservice";
 import { removeObject, updateObject } from "../utils/Common";
-function Users() {
+import { Link } from "react-router-dom";
+
+function Customer() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [contactNo, setContactNo] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
-  const [contactNo, setContactNo] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [users, setUsers] = useState(null);
+  const [customers, setCustomers] = useState(null);
   const [edit, setEdit] = useState(null);
 
-  const user = {
+  const customer = {
     firstName: firstName,
     lastName: lastName,
     address: address,
     email: email,
     contactNo: contactNo,
-    username: username,
-    password: password,
   };
 
   useEffect(() => {
@@ -29,19 +25,15 @@ function Users() {
   }, []);
 
   function getUsers() {
-    getAllData("users", setUsers);
+    getAllData("customers", setCustomers);
   }
-
   function clearFields() {
     setFirstName("");
     setLastName("");
     setAddress("");
     setContactNo("");
     setEmail("");
-    setUsername("");
-    setPassword("");
   }
-
   function handleFirstName(event) {
     setFirstName(event.target.value);
   }
@@ -57,57 +49,51 @@ function Users() {
   function handleContactNo(event) {
     setContactNo(event.target.value);
   }
-  function handleUsername(event) {
-    setUsername(event.target.value);
-  }
-  function handlePassword(event) {
-    setPassword(event.target.value);
-  }
 
-  function createUser(event) {
+  function createCustomer(event) {
     event.preventDefault();
     create(
       event,
-      "users",
-      setUsers,
-      users,
-      user,
+      "customers",
+      setCustomers,
+      customers,
+      customer,
       clearFields,
       setEdit
     );
   }
-  function updateUsers(updateUser) {
-    updateObject(users, updateUser, setUsers);
+  function updateCustomers(updateCustomer) {
+    updateObject(customers, updateCustomer, setCustomers);
   }
-  function removeUsers(id) {
-    removeObject(id, users, setUsers);
+  function removeCustomers(id) {
+    removeObject(id, customers, setCustomers);
   }
 
-  function updateUser(event) {
+  function updateCustomer(event) {
     update(
       event,
-      "user",
+      "customer",
       edit,
-      user,
+      customer,
       clearFields,
-      updateUsers,
+      updateCustomers,
       setEdit
     );
   }
 
-  function deleteUser(event, id) {
-    deleteData(event, "user", id, removeUsers);
+  function deleteCustomer(event, id) {
+    deleteData(event, "customer", id, removeCustomers);
   }
 
   return (
-    <div>
-      {!edit && (
+  <div>
+     {!edit && (
         <div>
-          <h2>Create User</h2>
+          <h2>Create Customer</h2>
           <Link className="home" to="/">
             Home
           </Link>
-          <form className="form" onSubmit={createUser}>
+          <form className="form" onSubmit={createCustomer}>
             <div>
               <label>First name</label>
               <br />
@@ -158,26 +144,6 @@ function Users() {
                 onChange={handleContactNo}
               ></input>
             </div>
-            <div>
-              <label>Username</label>
-              <br />
-              <input
-                type="text"
-                required
-                value={username}
-                onChange={handleUsername}
-              ></input>
-            </div>
-            <div>
-              <label>password</label>
-              <br />
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={handlePassword}
-              ></input>
-            </div>
             <br />
             <button type="submit">Save</button>&emsp;
             <button type="submit" onClick={clearFields}>
@@ -188,8 +154,8 @@ function Users() {
       )}
       {edit && (
         <div>
-          <h2>Update User</h2>
-          <form className="form" onSubmit={updateUser}>
+          <h2>Update Customer</h2>
+          <form className="form" onSubmit={updateCustomer}>
             <div>
               <label>First name</label>
               <br />
@@ -240,21 +206,6 @@ function Users() {
                 onChange={handleContactNo}
               ></input>
             </div>
-            <div>
-              <label>Username</label>
-              <br />
-              <input
-                type="text"
-                required
-                value={username !== null ? username : ""}
-                onChange={handleUsername}
-              ></input>
-            </div>
-            <div>
-              <label>password</label>
-              <br />
-              <input type="password" required onChange={handlePassword}></input>
-            </div>
             <br />
             <button type="submit">Update</button>
             &emsp;
@@ -271,32 +222,28 @@ function Users() {
           <th class="col col-2">Address</th>
           <th class="col col-3">Email</th>
           <th class="col col-3">Contact No</th>
-          <th class="col col-3">Username</th>
           <th class="col col-3">Action</th>
         </tr>
-        {users &&
-          users.map((user) => (
-            <tr id={user.id}>
+        {customers &&
+          customers.map((customer) => (
+            <tr id={customer.id}>
               <td>
-                {user.first_name} {user.last_name}
+                {customer.first_name} {customer.last_name}
               </td>
-              <td>{user.address}</td>
-              <td>{user.email}</td>
-              <td>{user.contact_no}</td>
-              <td>{user.username}</td>
+              <td>{customer.address}</td>
+              <td>{customer.email}</td>
+              <td>{customer.contact_no}</td>
               <td>
                 <button
                   type="button"
                   class="btn btn-primary"
                   onClick={() => {
-                    setEdit(user.id);
-                    setFirstName(user.first_name);
-                    setLastName(user.last_name);
-                    setAddress(user.address);
-                    setEmail(user.email);
-                    setContactNo(user.contact_no);
-                    setUsername(user.username);
-                    setPassword(user.password);
+                    setEdit(customer.id);
+                    setFirstName(customer.first_name);
+                    setLastName(customer.last_name);
+                    setAddress(customer.address);
+                    setEmail(customer.email);
+                    setContactNo(customer.contact_no);
                   }}
                 >
                   Edit
@@ -306,7 +253,7 @@ function Users() {
                 <button
                   type="button"
                   class="btn btn-danger"
-                  onClick={(event) => deleteUser(event, user.id)}
+                  onClick={(event) => deleteCustomer(event, customer.id)}
                 >
                   Delete
                 </button>
@@ -314,7 +261,7 @@ function Users() {
             </tr>
           ))}
       </table>
-    </div>
-  );
+  </div>);
 }
-export default Users;
+
+export default Customer;
