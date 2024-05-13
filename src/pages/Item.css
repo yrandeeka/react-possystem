@@ -1,0 +1,5 @@
+.inline-label {
+    display: inline-block;
+    margin-right: 10px; /* Adjust as needed */
+    vertical-align: top; /* Align label with the select */
+}   

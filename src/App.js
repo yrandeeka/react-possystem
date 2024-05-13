@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Supplier from './pages/Supplier';
 import Category from './pages/Category';
 import Customer from './pages/Customer';
+import Item from './pages/Item';
 
 function App() {//application parent component
   return (
@@ -16,6 +17,7 @@ function App() {//application parent component
             <Route path='/suppliers' element={<Supplier/>}/>
             <Route path='/categories' element={<Category/>}/>
             <Route path='/customers' element={<Customer/>}/>
+            <Route path='/items' element={<Item/>}/>
             <Route path='/' element={<Home/>}/>
         </Routes>
       </BrowserRouter>

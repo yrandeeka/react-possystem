@@ -146,6 +146,7 @@ function Users() {
                 required
                 value={email}
                 onChange={handleEmail}
+                placeholder="email@example.com"
               ></input>
             </div>
             <div>
