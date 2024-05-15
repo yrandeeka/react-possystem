@@ -10,11 +10,13 @@ function Item() {
   const [quantity, setQuantity] = useState(0.0);
   const [unitPrice, setUnitPrice] = useState("");
   const [remarks, setRemarks] = useState("");
-  const [categories, setCategories] = useState(null);
-  const [category, setCategory] = useState(null);
-  const [suppliers, setSuppliers] = useState(null);
-  const [supplier, setSupplier] = useState(null);
-  const [items, setItems] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [categoryId, setCategoryId] = useState(null);
+  const [suppliers, setSuppliers] = useState([]);
+  const [supplier, setSupplier] = useState([]);
+  const [supplierId, setSupplierId] = useState(null);
+  const [items, setItems] = useState([]);
   const [edit, setEdit] = useState(null);
 
   useEffect(() => {
@@ -22,8 +24,6 @@ function Item() {
     getSuppliers();
     getItems();
   }, []);
-
-
 
   const item = {
     name: name,
@@ -42,14 +42,20 @@ function Item() {
     setUnits(selected);
   }
   function handleCategory(event) {
-    const selected=categories.find(category=>category.description===event.target.value);
+    setCategoryId(event.target.value);
+    const selected=categories.find(category=>category.id===parseInt(event.target.value));
+    console.log("category-",selected);
     setCategory(selected);
   }
   function handleUnitPrice(event) {
     setUnitPrice(event.target.value);
   }
   function handleSupplier(event) {
-    const selected=suppliers.find(supplier=>supplier.name===event.target.value);
+    setSupplierId(event.target.value);
+    console.log("event.target.value-",event.target.value);
+    console.log(suppliers);
+    const selected=suppliers.find(supplier=>supplier.id===parseInt(event.target.value));
+    console.log("supplier-",selected);
     setSupplier(selected);
   }
   function handleQuantity(event) {
@@ -98,10 +104,11 @@ function Item() {
           Supplier
         </label>
         &emsp;
-        <select id="drpdwnSupplier" value={supplier?supplier.name:''} onChange={handleSupplier}>
+        <select id="drpdwnSupplier" value={suppliers} onChange={handleSupplier}>
+        <option value="">Select an option</option>
           {suppliers &&
             suppliers.map((supplier) => (
-              <option value={supplier.name} id={supplier.id}>
+              <option value={supplier.id} key={supplier.id} selected={supplierId===supplier.id}>
                 {supplier.name}
               </option>
             ))}
@@ -111,10 +118,15 @@ function Item() {
           Category
         </label>
         &emsp;
-        <select id="drpdwnCategory" value={category?category.description:''} onChange={handleCategory}>
+        {console.log("categoryId-",categoryId)}
+        <select id="drpdwnCategory" value={categories} onChange={handleCategory}>
+          <option value={category.name}>Select an option</option>
           {categories &&
             categories.map((category) => (
-              <option value={category.description} id={category.id}>
+              <option key={category.id} value={category.id}  selected={parseInt(categoryId) ===category.id}>
+                {console.log("categoryId",parseInt(categoryId))}
+                {console.log("category.id",category.id)}
+                {console.log(parseInt(categoryId) ===category.id)}
                 {category.description}
               </option>
             ))}
