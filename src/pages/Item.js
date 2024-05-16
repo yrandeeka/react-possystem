@@ -31,31 +31,37 @@ function Item() {
     quantity: quantity,
     unitPrice: unitPrice,
     supplier: supplier,
-    category:category,
+    category: category,
     remarks: remarks,
   };
   function handleName(event) {
     setName(event.target.value);
   }
   function handleUnits(event) {
-    const selected=unitsArr.find(unit=>unit.valueOf()===event.target.value);
+    const selected = unitsArr.find(
+      (unit) => unit.valueOf() === event.target.value
+    );
     setUnits(selected);
   }
   function handleCategory(event) {
     setCategoryId(event.target.value);
-    const selected=categories.find(category=>category.id===parseInt(event.target.value));
-    console.log("category-",selected);
+    const selected = categories.find(
+      (category) => category.id === parseInt(event.target.value)
+    );
+    console.log("category-", selected);
     setCategory(selected);
   }
   function handleUnitPrice(event) {
     setUnitPrice(event.target.value);
   }
   function handleSupplier(event) {
+    console.log("event.target.value-", event.target.value);
     setSupplierId(event.target.value);
-    console.log("event.target.value-",event.target.value);
     console.log(suppliers);
-    const selected=suppliers.find(supplier=>supplier.id===parseInt(event.target.value));
-    console.log("supplier-",selected);
+    const selected = suppliers.find(
+      (supplier) => supplier.id === parseInt(event.target.value)
+    );
+    console.log("supplier-", selected);
     setSupplier(selected);
   }
   function handleQuantity(event) {
@@ -76,9 +82,9 @@ function Item() {
     getAllData("suppliers", setSuppliers);
   }
   function saveItem(event) {
-    console.log("item***-",item);
-    console.log("category**",category);
-    console.log("supplier**",supplier);
+    console.log("item***-", item);
+    console.log("category**", category);
+    console.log("supplier**", supplier);
     create(event, "items", setItems, items, item, clearFields, setEdit);
   }
 
@@ -90,7 +96,7 @@ function Item() {
     setCategories(categories[0].description);
     setUnitPrice(0.0);
   }
-  
+
   return (
     <div>
       <Link className="home" to="/">
@@ -104,7 +110,7 @@ function Item() {
           Supplier
         </label>
         &emsp;
-        <select id="drpdwnSupplier" value={suppliers} onChange={handleSupplier}>
+        <select id="drpdwnSupplier"  required onChange={handleSupplier}>
         <option value="">Select an option</option>
           {suppliers &&
             suppliers.map((supplier) => (
@@ -118,15 +124,15 @@ function Item() {
           Category
         </label>
         &emsp;
-        {console.log("categoryId-",categoryId)}
-        <select id="drpdwnCategory" value={categories} onChange={handleCategory}>
-          <option value={category.name}>Select an option</option>
+        <select
+          id="drpdwnCategory"
+          required
+          onChange={handleCategory}
+        >
+          <option value="">Select an option</option>
           {categories &&
             categories.map((category) => (
-              <option key={category.id} value={category.id}  selected={parseInt(categoryId) ===category.id}>
-                {console.log("categoryId",parseInt(categoryId))}
-                {console.log("category.id",category.id)}
-                {console.log(parseInt(categoryId) ===category.id)}
+              <option key={category.id} value={category.id}>
                 {category.description}
               </option>
             ))}
@@ -136,7 +142,7 @@ function Item() {
           Units
         </label>
         &emsp;
-        <select id="drpdwnUnits" value={units} onChange={handleUnits}>
+        <select id="drpdwnUnits" required value={units} onChange={handleUnits}>
           {unitsArr.map((unit) => (
             <option value={unit}>{unit}</option>
           ))}
@@ -144,7 +150,7 @@ function Item() {
         <br />
         <label>Quantity</label>&emsp;
         <input
-          type="text"
+          type="number"
           required
           value={quantity}
           onChange={handleQuantity}
@@ -152,7 +158,7 @@ function Item() {
         <br />
         <label>Unit Price (Rs.)</label>&emsp;
         <input
-          type="text"
+          type="number"
           required
           value={unitPrice}
           onChange={handleUnitPrice}
