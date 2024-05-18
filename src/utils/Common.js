@@ -9,3 +9,4 @@ export function removeObject(id,allData,setData){
     const update=allData.filter(object=>object.id!==id);
     setData(update);
 }
+

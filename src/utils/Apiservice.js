@@ -6,7 +6,6 @@ export function getAllData(url,setData) {
     axios
     .get(config.baseUrl+url)
     .then(function (response) {
-      console.log("response-", response.data);
       setData(response.data);   
     })
     .catch(function (error) {
@@ -20,7 +19,6 @@ export function create(event,url,setData,data,dataObject,clearFields,setEdit) {
   axios
     .post(config.baseUrl+url, dataObject)
     .then(function (response) {
-      console.log(response.data);
       clearFields();
       setData([...data,response.data])
       setEdit(null);
@@ -35,7 +33,7 @@ export function update(event,url,id,dataObject,clearFields,updateData,setEdit) {
   axios
     .put(config.baseUrl+url+"/"+id, dataObject)
     .then(function (response) {
-      console.log(response.data);
+      console.log(url,response.data);
       clearFields();
       updateData(response.data);
       setEdit(null);
