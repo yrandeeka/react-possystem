@@ -8,7 +8,8 @@ function Home() {
             <Link to="/suppliers">Suppliers</Link><br/>
             <Link to="/customers">Customers</Link><br/>
             <Link to="/categories">Categories</Link><br/>
-            <Link to="/items">Items</Link>
+            <Link to="/items">Items</Link><br/>
+            <Link to="/payment">Payments</Link>
         </div>
     );
 }
