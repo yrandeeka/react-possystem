@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getAllData } from "../utils/Apiservice";
 import { Link } from "react-router-dom";
-import SeverityDemo from "../templates/errorMsg";
+import { Toast } from "primereact/toast";
 
 function Payment() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [purchaseQty, setPurchaseQty] = useState(null);
+  const [purchaseQty, setPurchaseQty] = useState([{ id: null, qty: null }]);
+  const [cart, setCart] = useState([]);
+  const toast = useRef(null);
 
   useEffect(() => {
     getItems();
@@ -20,6 +22,7 @@ function Payment() {
       }
     });
   }
+
   useEffect(() => {
     if (items.length > 0) {
       getCategories(items);
@@ -28,15 +31,35 @@ function Payment() {
   function getItems() {
     getAllData("items", setItems);
   }
-  function handlePurchaseQTy(event) {
+  function handlePurchaseQTy(event, id) {
     console.log("purchaseQty-", purchaseQty);
-    setPurchaseQty(event.target.value);
+    setPurchaseQty([{ id: id, qty: parseFloat(event.target.value) }]);
   }
-  function addToCart(purchaseQty) {
-    console.log("purchaseQty==", purchaseQty);
-    if (purchaseQty == null) {
-      return <></>;
+
+  const showMsg = (_severity, _summary, _detail, _life) => {
+    toast.current.show({
+      severity: _severity,
+      summary: _summary,
+      detail: _detail,
+      life: _life,
+    });
+  };
+  function addToCart(item) {
+    if (purchaseQty[0].id !== item.id) {
+      showMsg("error", "Error", "Message Content", 3000);
+      return;
+    } else if (purchaseQty[0].id === item.id && purchaseQty[0].qty !== null) {
+      let purItem = item;
+      purItem.quantity= purchaseQty[0].qty;
+      console.log("purItem-",purItem);
+      cart.map((item) => {
+        if (item.id!==purItem.id) {
+          setCart([...cart,purItem])
+        }
+      });
+      console.log("cart==>",cart);
     }
+    console.log("purchaseQty---", purchaseQty);
   }
 
   return (
@@ -47,6 +70,7 @@ function Payment() {
       <button> View Cart</button>
       {console.log("items---", items)}
       {console.log("categories---", categories)}
+      {console.log("cart---", cart)}
       {categories &&
         categories.map((category) => (
           <table class="container">
@@ -74,20 +98,18 @@ function Payment() {
                     <td>{item.unitPrice}</td>
                     <input
                       type="number"
-                      onChange={handlePurchaseQTy}
+                      onChange={(e) => handlePurchaseQTy(e, item.id)}
                       placeholder="add qty"
                     ></input>
                     <td>
                       <button
                         type="button"
                         class="btn btn-primary"
-                        onClick={() => (<>
-                            {purchaseQty && SeverityDemo("error", "Error", "Message Content", 3000)}
-                        </>)}
+                        onClick={() => addToCart(item)}
                       >
                         Add To Cart
                       </button>
-                      <SeverityDemo />
+                      <Toast ref={toast} />
                     </td>
                   </tr>
                 ))}
