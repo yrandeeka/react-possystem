@@ -13,15 +13,18 @@ export function getAllData(url,setData) {
     });
 }
 
-export function create(event,url,setData,data,dataObject,clearFields,setEdit) {
+export function create(event,url,setData,data,inputObject,clearFields,setEdit) {
   event.preventDefault();
 
   axios
-    .post(config.baseUrl+url, dataObject)
+    .post(config.baseUrl+url, inputObject)
     .then(function (response) {
       clearFields();
       setData([...data,response.data])
-      setEdit(null);
+      if (clearFields!==null) {
+        setEdit(null);
+      }
+        
     })
     .catch(function (error) {
       console.log(error);
