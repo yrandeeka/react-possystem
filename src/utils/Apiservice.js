@@ -21,7 +21,7 @@ export function create(event,url,setData,data,inputObject,clearFields,setEdit) {
     .then(function (response) {
       clearFields();
       setData([...data,response.data])
-      if (clearFields!==null) {
+      if (setEdit!==null) {
         setEdit(null);
       }
         

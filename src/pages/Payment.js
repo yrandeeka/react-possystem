@@ -1,18 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { create, getAllData } from "../utils/Apiservice";
-import { Link } from "react-router-dom";
+import "../index.css";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Toast } from "primereact/toast";
-import { updateObject } from "../utils/Common";
+import { removeObject, updateObject } from "../utils/Common";
 import axios from "axios";
+import config from "../utils/Config";
 
 function Payment() {
   const [items, setItems] = useState([]);
   const [user, setUser] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [cartQty, setCartQty] = useState([{ id: null, qty: null }]);
+  const [cartQty, setCartQty] = useState([]);
   const [cart, setCart] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
   const [tempCart, setTempCart] = useState([]);
   const toast = useRef(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getItems();
@@ -20,11 +25,31 @@ function Payment() {
     getCart();
   }, []);
 
+  useEffect(() => {
+    getCartItems();
+  }, [cart]);
+
+  async function getCartItems() {
+    if (cart.id===null) {
+      return;
+    }
+    await axios
+      .get("http://localhost:8080/cartitem/" + cart.id)
+      .then(function (response) {
+        console.log("cart item", response.data);
+        setCartItems(response.data);
+      })
+      .catch(function (error) {
+        console.log("cart item error", error);
+      });
+  }
+
   function getUser() {
+
     axios
       .get("http://localhost:8080/user/" + 1)
       .then(function (response) {
-        console.log(response.data);
+        console.log("user-", response.data);
         setUser(response.data);
       })
       .catch(function (error) {
@@ -35,7 +60,7 @@ function Payment() {
     axios
       .get("http://localhost:8080/cart/" + 1)
       .then(function (response) {
-        console.log(response.data);
+        console.log("cart-->", response.data);
         setCart(response.data);
       })
       .catch(function (error) {
@@ -72,19 +97,55 @@ function Payment() {
       life: _life,
     });
   };
-  function addToCart(item) {
+  function addToCart(event, item) {
+    event.preventDefault();
+    if (
+      cartQty[0].id === null ||
+      (cartQty[0].id === item.id && cartQty[0].qty === null)
+    ) {
+      showMsg("error", "Error", "Please Add Qty", 3000);
+      clearFields();
+      return;
+    }
     if (cartQty[0].id !== item.id) {
-      showMsg("error", "Error", "Message Content", 3000);
+      showMsg("error", "Error", "Add One by One Item to Cart", 3000);
+      clearFields();
       return;
     } else if (cartQty[0].id === item.id && cartQty[0].qty !== null) {
       const cartItem = {
-        id: item.id,
+        itemId: item.id,
         cartQty: cartQty[0].qty,
+        cartId: cart.id,
       };
-      if (tempCart.findIndex((item) => item.id === cartItem.id) === -1) {
-        setTempCart([...tempCart, cartItem]);
+
+      if (cartItems.findIndex((cItem) => cItem.item.id === cartItem.itemId) === -1) {
+        axios
+          .post("http://localhost:8080/cartitem", cartItem)
+          .then(function (response) {
+            console.log(response.data);
+            clearFields();
+            const createItem = response.data;
+            setCartItems([...cartItems, createItem]);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       } else {
-        updateObject(tempCart, cartItem, setTempCart);
+        axios
+          .put("http://localhost:8080/updatecartitem", cartItem)
+          .then(function (response) {
+            console.log(response.data);
+            clearFields();
+            const updateItem = response.data;
+            /*updating the cartItems when change qtys*/
+            const update = cartItems.map((item) => (
+             item.id === updateItem.id ? updateItem : item
+            ));
+            setCartItems(update);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       }
     }
   }
@@ -93,13 +154,25 @@ function Payment() {
     setCartQty([{ id: null, qty: null }]);
   }
 
-  function saveCart(event) {
-    const addCart={
-      user:user,
-      addItems:tempCart
-    }
-    console.log("addCart=>",addCart);
-    create(event, "carts", setCart, cart, addCart, clearFields, null);
+  function createCart(event) {
+    create(event, "carts", setCart, cart, user, clearFields, null);
+  }
+
+  function removeCartItem(event,itemId) {
+    event.preventDefault();
+
+    axios.put(config.baseUrl+"removecartitem/"+itemId)
+    .then(function (response) {
+      console.log("removeItem",);
+      const rvmdItem=response.data;
+      if (rvmdItem.id===itemId) {
+        removeObject(itemId,cartItems,setCartItems);  
+      }
+    })
+  }
+
+  function toInvoice() {
+    navigate('/invoice');
   }
 
   return (
@@ -107,57 +180,86 @@ function Payment() {
       <Link className="home" to="/">
         Home
       </Link>
-        {tempCart.length > 0 && <button type="submit" onClick={saveCart}> Save Cart</button>}
-        {cart.length > 1 && <button> View Cart</button>}
-        {console.log(cart)}        
-        {categories &&
-          categories.map((category) => (
-            <table class="container">
-              <h2>{`${category}`}</h2>
-              <tr class="responsive-table">
-                <th class="col col-2">Item</th>
-                <th class="col col-2">Supplier</th>
-                <th class="col col-2">Stock QTY</th>
-                <th class="col col-2">Unit Price(Rs.)</th>
-                <th class="col col-2">Purchase QTY</th>
-                <th class="col col-3">Action</th>
+      {tempCart.length > 0 && (
+        <button type="submit" onClick={createCart}>
+          {" "}
+          Save Cart
+        </button>
+      )}
+      {cart.length > 1 && <button> View Cart</button>}
+      {console.log(cart)}
+      {categories &&
+        categories.map((category) => (
+          <table class="container">
+            <h2>{`${category}`}</h2>
+            <tr class="responsive-table">
+              <th class="col col-2">Item</th>
+              <th class="col col-2">Supplier</th>
+              <th class="col col-2">Stock QTY</th>
+              <th class="col col-2">Unit Price(Rs.)</th>
+              <th class="col col-2">Purchase QTY</th>
+              <th class="col col-3">Action</th>
+            </tr>
+            {items &&
+              items
+                .filter(
+                  (item) =>
+                    item.status === "stock in" &&
+                    item.category.description === category
+                )
+                .map((item) => (
+                  <tr id={item.id}>
+                    <td>{item.name}</td>
+                    <td>{item.supplier.name}</td>
+                    <td>{`${item.quantity} ${item.units}`}</td>
+                    <td>{item.unitPrice}</td>
+                    <input
+                      type="number"
+                      required
+                      onChange={(e) => handlePurchaseQTy(e, item.id)}
+                      placeholder="add qty"
+                    ></input>
+                    <td>
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                        onClick={(event) => addToCart(event, item)}
+                      >
+                        {cart && "Add to Cart"}
+                      </button>
+                      <Toast ref={toast} />
+                    </td>
+                  </tr>
+                ))}
+          </table>
+        ))}
+      {console.log("cartItems--->>>",cartItems)}
+      <div class="page">
+        <table className="cartTbl">
+          <tr>
+            <th class="col col-2">Description</th>
+            <th class="col col-2">add qty</th>
+            <th class="col col-2">unit Price(Rs.)</th>
+            <th class="col col-2">total Price(Rs.)</th>
+            <th class="col col-2"></th>
+          </tr>
+          {cartItems &&
+            cartItems.map((item) => (
+              <tr>
+                <td>{item.item.name}</td>
+                <td>{`${item.cartQty} ${item.item.units}`}</td>
+                <td>{`${item.item.unitPrice}`}</td>
+                <td>{`${item.item.unitPrice * item.cartQty}`}</td>
+                <td>
+                  <button type="button" class="btn btn-danger" onClick={(e)=>removeCartItem(e,item.id)}>
+                    Remove
+                  </button>
+                </td>
               </tr>
-              {items &&
-                items
-                  .filter(
-                    (item) =>
-                      item.status === "stock in" &&
-                      item.category.description === category
-                  )
-                  .map((item) => (
-                    <tr id={item.id}>
-                      <td>{item.name}</td>
-                      <td>{item.supplier.name}</td>
-                      <td>{`${item.quantity} ${item.units}`}</td>
-                      <td>{item.unitPrice}</td>
-                      <input
-                        type="number"
-                        required
-                        onChange={(e) => handlePurchaseQTy(e, item.id)}
-                        placeholder="add qty"
-                      ></input>
-                      <td>
-                        <button
-                          type="submit"
-                          class="btn btn-primary"
-                          onClick={() => addToCart(item)}
-                        >
-                          {tempCart.findIndex((citem) => citem.id === item) ===
-                          -1
-                            ? "Add To Cart"
-                            : "Added to Cart"}
-                        </button>
-                        <Toast ref={toast} />
-                      </td>
-                    </tr>
-                  ))}
-            </table>
-          ))}
+            ))}
+        </table>
+        <button onClick={toInvoice}>To Invoice</button>
+      </div>
     </div>
   );
 }

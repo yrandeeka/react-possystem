@@ -8,6 +8,7 @@ import Category from './pages/Category';
 import Customer from './pages/Customer';
 import Item from './pages/Item';
 import Payment from './pages/Payment';
+import Invoice from './pages/Invoice';
 
 function App() {//application parent component
   return (
@@ -20,6 +21,7 @@ function App() {//application parent component
             <Route path='/customers' element={<Customer/>}/>
             <Route path='/items' element={<Item/>}/>
             <Route path='/payment' element={<Payment/>}/>
+            <Route path='/invoice' element={<Invoice/>}/>
             <Route path='/' element={<Home/>}/>
         </Routes>
       </BrowserRouter>
