@@ -233,7 +233,6 @@ function Payment() {
                 ))}
           </table>
         ))}
-      {console.log("cartItems--->>>",cartItems)}
       <div class="page">
         <table className="cartTbl">
           <tr>
@@ -258,7 +257,7 @@ function Payment() {
               </tr>
             ))}
         </table>
-        <button onClick={toInvoice}>To Invoice</button>
+        {<button onClick={toInvoice}>To Invoice</button>}
       </div>
     </div>
   );

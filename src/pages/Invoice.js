@@ -9,11 +9,12 @@ function Invoice() {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState([]);
   const [customers, setCustomers] = useState([]);
-  const [customer, setCustomer] = useState('');
+  const [customer, setCustomer] = useState("");
   const [discount, setDiscount] = useState(0.0);
-  const [totalPrice, setTotalPrice] = useState(0.0);  
-  const [invoice, setInvoice] = useState(0.0);  
-  const [totalPriceWithDiscount, setTotalPriceWithDiscount] = useState(totalPrice);
+  const [totalPrice, setTotalPrice] = useState(0.0);
+  const [invoice, setInvoice] = useState(0.0);
+  const [totalPriceWithDiscount, setTotalPriceWithDiscount] =
+    useState(totalPrice);
 
   useEffect(() => {
     getUser();
@@ -59,7 +60,7 @@ function Invoice() {
       });
   }
 
-  function getUser(){
+  function getUser() {
     axios
       .get("http://localhost:8080/user/" + 1)
       .then(function (response) {
@@ -79,13 +80,20 @@ function Invoice() {
     setCustomer(selected);
   }
   function handleDiscount(event) {
-    setDiscount(parseFloat(event.target.value));
+    console.log("handleDiscount--", event.target.value);
+    const discount = event.target.value;
+    setDiscount(parseFloat(discount));
   }
 
   function applyDiscount(event) {
     event.preventDefault();
-    const priceWithDiscount = totalPrice - totalPrice * discount;
-    setTotalPriceWithDiscount(priceWithDiscount);
+    console.log("discount--",discount);
+    if (!isNaN(discount)) {
+      const priceWithDiscount = totalPrice - totalPrice * discount;
+      setTotalPriceWithDiscount(priceWithDiscount);
+    } else {
+      setTotalPriceWithDiscount(totalPrice);
+    }
   }
 
   async function getTotalPrice(cartItems) {
@@ -96,8 +104,8 @@ function Invoice() {
     setTotalPrice(ttlPrice - discount);
   }
 
-  function clearFields(params) {
-    setCustomer('');
+  function clearFields() {
+    setCustomer("");
     setDiscount(0.0);
     setTotalPriceWithDiscount(0.0);
   }
@@ -105,23 +113,25 @@ function Invoice() {
   function proceedPayment(event) {
     event.preventDefault();
 
-    const customerPayment={
-      totalItems:cartItems.length,
-      discountFraction:discount,  
-      totalPrice:totalPrice,
-      finalPrice:totalPriceWithDiscount,
-      user:user,
-      customer:customer,
-      cartItems:cartItems
-    }
+    const customerPayment = {
+      totalItems: cartItems.length,
+      discountFraction: discount,
+      totalPrice: totalPrice,
+      finalPrice: totalPriceWithDiscount,
+      user: user,
+      customer: customer,
+      cartItems: cartItems,
+    };
 
-    axios.post(config.baseUrl+"invoice",customerPayment)
-    .then(function (response) {
-      setInvoice(response.data);
-    })
-    .catch(function (error) {
-      console.log(error);
-    })
+    axios
+      .post(config.baseUrl + "invoice", customerPayment)
+      .then(function (response) {
+        setInvoice(response.data);
+        clearFields();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   }
 
   return (
@@ -129,7 +139,7 @@ function Invoice() {
       <Link className="payment" to="/payment">
         Back to Cart
       </Link>
-      {console.log("invoice--->",invoice)}
+      {console.log("invoice--->", invoice)}
       <h2>Invoice the Customer</h2>
       {console.log("customers-", customers)}
       <form onSubmit={proceedPayment}>
