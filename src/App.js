@@ -9,10 +9,12 @@ import Customer from './pages/Customer';
 import Item from './pages/Item';
 import Payment from './pages/Payment';
 import Invoice from './pages/Invoice';
+import Sidebar from './templates/sidebar';
 
 function App() {//application parent component
   return (
     <div className="App">
+      <Sidebar/>
       <BrowserRouter>
         <Routes>
             <Route path='/users' element={<Users/>}/>
@@ -20,7 +22,7 @@ function App() {//application parent component
             <Route path='/categories' element={<Category/>}/>
             <Route path='/customers' element={<Customer/>}/>
             <Route path='/items' element={<Item/>}/>
-            <Route path='/payment' element={<Payment/>}/>
+            <Route path='/payments' element={<Payment/>}/>
             <Route path='/invoice' element={<Invoice/>}/>
             <Route path='/' element={<Home/>}/>
         </Routes>

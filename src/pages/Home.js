@@ -9,7 +9,7 @@ function Home() {
             <Link to="/customers">Customers</Link><br/>
             <Link to="/categories">Categories</Link><br/>
             <Link to="/items">Items</Link><br/>
-            <Link to="/payment">Payments</Link>
+            <Link to="/payments">Payments</Link>
         </div>
     );
 }
