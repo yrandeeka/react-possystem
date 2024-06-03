@@ -65,7 +65,7 @@ function Category() {
   }
 
   return (
-    <div>
+    <div className="category">
       {!edit && (
         <div>
           <h2>Create Category</h2>

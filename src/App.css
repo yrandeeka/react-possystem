@@ -1,5 +1,5 @@
-.App{
-    width: 100vw;
+.App, #root{
+    width: 250px;
     height: 100vh;
 }
 body{
@@ -7,8 +7,45 @@ body{
     padding: 0;
 }
 
+.container{
+    display: flex;
+}
+main{
+    width: 100%;
+    padding: 100px;
+}
 .sidebar{
-    height: 100%;
-    width: 250px;
-    background-color: aqua;
+    background-color: rgb(10, 56, 17);
+    height: 100vh;
+    transition: all 0.5s;
+}
+
+.top_section{
+    display: flex;
+    align-items: center;
+    padding: 20px 15px;
+}
+
+.bars{
+    display: flex;
+    color: aliceblue;
+    font-size: 25px;
+    margin-left: 100px;
+}
+
+.link{
+    display: flex;
+    padding:10px 15px;
+    gap:15px;
+    transition: all 0.5s;
+}
+
+.link:hover{
+    background: rgb(205, 182, 255);
+    color: blue;
+    transition: all 0.5s;
+}
+.active{
+    background: rgb(205, 182, 255);
+    color: blue;
 }
