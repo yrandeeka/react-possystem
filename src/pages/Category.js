@@ -3,8 +3,12 @@ import { useEffect, useState } from "react";
 import { create, deleteData, getAllData, update } from "../utils/Apiservice";
 import { removeObject, updateObject } from "../utils/Common";
 import { Link } from "react-router-dom";
+import { useAuth } from "../utils/AuthContext";
 
 function Category() {
+
+  const { isAuthenticated, jwtToken } = useAuth();
+
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState(null);
   const [edit, setEdit] = useState(null);
@@ -14,11 +18,13 @@ function Category() {
   };
 
   useEffect(() => {
-    getCategories();
+    if (isAuthenticated) {
+      getCategories();
+    }
   }, []);
 
   function getCategories() {
-    getAllData("categories", setCategories);
+    getAllData("categories",jwtToken, setCategories);
   }
 
   function clearFields() {
@@ -122,28 +128,31 @@ function Category() {
       <tr class="responsive-table">
         <th class="col col-3">Description</th>
       </tr>
-      {categories && categories.map((category)=>(
-        <tr id={category.id}>
+      {categories &&
+        categories.map((category) => (
+          <tr id={category.id}>
             <td>{category.description}</td>
             <td>
-                <button 
+              <button
                 type="button"
                 class="btn btn-primary"
-                onClick={()=>{
-                    setEdit(category.id);
-                    setDescription(category.description);
-                }}>
-                    Edit
-                </button>
+                onClick={() => {
+                  setEdit(category.id);
+                  setDescription(category.description);
+                }}
+              >
+                Edit
+              </button>
             </td>
             <td
-            type="button"
-            class="btn btn-danger"
-            onClick={(event) => deleteUser(event, category.id)}>
-                Delete
+              type="button"
+              class="btn btn-danger"
+              onClick={(event) => deleteUser(event, category.id)}
+            >
+              Delete
             </td>
-        </tr>
-      ))}
+          </tr>
+        ))}
     </div>
   );
 }

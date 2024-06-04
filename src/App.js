@@ -10,6 +10,7 @@ import Item from "./pages/Item";
 import Payment from "./pages/Payment";
 import Invoice from "./pages/Invoice";
 import Sidebar from "./templates/sidebar";
+import Login from "./pages/Login";
 
 function App() {
   //application parent component
@@ -25,6 +26,7 @@ function App() {
             <Route path="/items" element={<Item />} />
             <Route path="/payments" element={<Payment />} />
             <Route path="/invoice" element={<Invoice />} />
+            <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
           </Routes>
         </Sidebar>

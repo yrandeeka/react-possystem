@@ -1,10 +1,16 @@
 import axios from "axios";
 import config from "./Config";
+import { useAuth } from "./AuthContext";
 
-export function getAllData(url,setData) {
+export function getAllData(url,jwtToken,setData) {
   
+  const authConfig={
+    headers:{
+      Authorization:`Bearer ${jwtToken}`
+    }
+  }
     axios
-    .get(config.baseUrl+url)
+    .get(config.baseUrl+url,authConfig)
     .then(function (response) {
       setData(response.data);   
     })
