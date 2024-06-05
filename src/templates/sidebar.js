@@ -10,8 +10,8 @@ function Sidebar({ children }) {
   const [isOpen,setIsOpen]=useState(false);
   const toggle=()=>setIsOpen(!isOpen);
   return (
-    <div className="container">
-      <div style={{width:isOpen?"300px":"50px"}} className="sidebar">
+    <div className="sidebarcontainer">
+      <div style={{width:isOpen?"200px":"50px"}} className="sidebar">
         <div className="top_section">
           <div style={{marginLeft:isOpen?"150px":"0px"}} className="bars">
               <DensityMediumIcon onClick={toggle}/>
@@ -27,7 +27,6 @@ function Sidebar({ children }) {
             >
               <div className="icon">{val.icon}</div>
               <div style={{display:isOpen?"block":"none"}} className="link_text">{val.title}</div>
-              
             </NavLink>
           );
         })}

@@ -8,7 +8,6 @@ import { useAuth } from "../utils/AuthContext";
 function Category() {
 
   const { isAuthenticated, jwtToken } = useAuth();
-
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState(null);
   const [edit, setEdit] = useState(null);

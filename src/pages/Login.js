@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login=()=>{
 
-    const {login}=useAuth();//to use useAuth hook
+    const contextData=useAuth();//to use useAuth hook
     const navigate=useNavigate();
 
     const [username,setUsername]=useState("");
@@ -22,9 +22,16 @@ const Login=()=>{
 
         axios.post(config.baseUrl+"auth/login",data)
         .then(function (response) {
-            console.log(response.data);
-            login(response.data);
-            navigate("/");
+            console.log(response);
+            contextData.login(response.data)
+            // login(response.data);
+            if (response.data!=="") {
+                navigate("/");
+            }
+            else{
+                navigate("/login");
+            }
+                
         })
         .catch(function (error) {
             console.log(error);

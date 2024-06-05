@@ -1,6 +1,6 @@
 import {createContext, useContext, useState} from 'react';
 
-const AuthContext=createContext({
+export const AuthContext=createContext({
     isAuthenticated:false,
     jwtToken:null,
     //user:null,
@@ -14,6 +14,7 @@ export const AuthProvider=({children})=>{
     //const [user,setUser]=useState(null);
 
     const login=(token)=>{
+        console.log("token---",token);
         setIsAuthenticated(true);
         setJwtToken(token);
         //setUser(data.user);
@@ -28,18 +29,12 @@ export const AuthProvider=({children})=>{
     }
 
     return(
-
-        <div>
-            {console.log(isAuthenticated)}
-            {console.log(jwtToken)}
         <AuthContext.Provider value={{isAuthenticated,jwtToken,login,logout}}>
             {children}
         </AuthContext.Provider>
-        </div>
-
     )
 }
 
 export const useAuth=()=>{
-    return useContext(AuthContext)
+    return useContext(AuthContext);
 }
