@@ -7,6 +7,8 @@ import config from "../utils/Config";
 import { removeObject, updateObject } from "../utils/Common";
 
 function Supplier() {
+  const jwtToken = localStorage.getItem("jwtToken");
+  const userId = localStorage.getItem("userId");
   const [name, setName] = useState("");
   const [contactNo, setContactNo] = useState(null);
   const [address, setAddress] = useState("");
@@ -22,12 +24,8 @@ function Supplier() {
   };
 
   useEffect(() => {
-    getSuppliers();
+    getAllData("suppliers", jwtToken, setSuppliers);
   }, []);
-
-  function getSuppliers() {
-    getAllData("suppliers", setSuppliers);
-  }
 
   function handleName(event) {
     setName(event.target.value);
@@ -48,8 +46,8 @@ function Supplier() {
     setEmail("");
   }
 
-  function updateSuppliers() {
-    updateObject(edit, suppliers, setSuppliers);
+  function updateSuppliers(updateSupplier) {
+    updateObject(suppliers, updateSupplier, setSuppliers);
   }
 
   function removeSuppliers() {
@@ -60,6 +58,7 @@ function Supplier() {
     create(
       event,
       "suppliers",
+      jwtToken,
       setSuppliers,
       suppliers,
       supplier,
@@ -72,6 +71,7 @@ function Supplier() {
       event,
       "supplier",
       edit,
+      jwtToken,
       supplier,
       clearFields,
       updateSuppliers,
@@ -80,7 +80,7 @@ function Supplier() {
   }
 
   function deleteUser(event, id) {
-    deleteData(event, "user", id, removeSuppliers);
+    deleteData(event, "user", id, jwtToken, removeSuppliers);
   }
 
   return (
@@ -90,112 +90,108 @@ function Supplier() {
           Home
         </Link>
         {!edit && (
-          <>
+          <form className="form" onSubmit={createSupplier}>
             <h2>Create Supplier</h2>
-            <form className="form" onSubmit={createSupplier}>
-              <div>
-                <label>Name</label>
-                <br />
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={handleName}
-                ></input>
-              </div>
-              <div>
-                <label>Address</label>
-                <br />
-                <input
-                  type="text"
-                  required
-                  value={address}
-                  onChange={handleAddress}
-                ></input>
-              </div>
-              <div>
-                <label>Email</label>
-                <br />
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={handleEmail}
-                ></input>
-              </div>
-              <div>
-                <label>Contact No</label>
-                <br />
-                <input
-                  type="text"
-                  required
-                  value={contactNo}
-                  onChange={handleContactNo}
-                ></input>
-              </div>
+            <div>
+              <label>Name</label>
               <br />
-              <button type="submit">Save</button>&emsp;
-              <button type="submit" onClick={clearFields}>
-                Clear
-              </button>
-            </form>
-          </>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={handleName}
+              ></input>
+            </div>
+            <div>
+              <label>Address</label>
+              <br />
+              <input
+                type="text"
+                required
+                value={address}
+                onChange={handleAddress}
+              ></input>
+            </div>
+            <div>
+              <label>Email</label>
+              <br />
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={handleEmail}
+              ></input>
+            </div>
+            <div>
+              <label>Contact No</label>
+              <br />
+              <input
+                type="text"
+                required
+                value={contactNo}
+                onChange={handleContactNo}
+              ></input>
+            </div>
+            <br />
+            <button type="submit">Save</button>&emsp;
+            <button type="submit" onClick={clearFields}>
+              Clear
+            </button>
+          </form>
         )}
         {edit && (
-          <>
+          <form className="form" onSubmit={updateSupplier}>
             <h2>Update Supplier</h2>
-            <form className="form" onSubmit={updateSupplier}>
-              <div>
-                <label>Name</label>
-                <br />
-                <input
-                  type="text"
-                  required
-                  value={name !== null ? name : ""}
-                  onChange={handleName}
-                ></input>
-              </div>
-              <div>
-                <label>Address</label>
-                <br />
-                <input
-                  type="text"
-                  required
-                  value={address !== null ? address : ""}
-                  onChange={handleAddress}
-                ></input>
-              </div>
-              <div>
-                <label>Email</label>
-                <br />
-                <input
-                  type="email"
-                  required
-                  value={email !== null ? email : ""}
-                  onChange={handleEmail}
-                ></input>
-              </div>
-              <div>
-                <label>Contact No</label>
-                <br />
-                <input
-                  type="tel"
-                  required
-                  value={contactNo !== null ? contactNo : ""}
-                  onChange={handleContactNo}
-                ></input>
-              </div>
+            <div>
+              <label>Name</label>
               <br />
-              <button type="submit">Update</button>
-              &emsp;
-              <button type="submit" onClick={() => setEdit(null)}>
-                Cancel
-              </button>
-            </form>
-          </>
+              <input
+                type="text"
+                required
+                value={name !== null ? name : ""}
+                onChange={handleName}
+              ></input>
+            </div>
+            <div>
+              <label>Address</label>
+              <br />
+              <input
+                type="text"
+                required
+                value={address !== null ? address : ""}
+                onChange={handleAddress}
+              ></input>
+            </div>
+            <div>
+              <label>Email</label>
+              <br />
+              <input
+                type="email"
+                required
+                value={email !== null ? email : ""}
+                onChange={handleEmail}
+              ></input>
+            </div>
+            <div>
+              <label>Contact No</label>
+              <br />
+              <input
+                type="tel"
+                required
+                value={contactNo !== null ? contactNo : ""}
+                onChange={handleContactNo}
+              ></input>
+            </div>
+            <br />
+            <button type="submit">Update</button>
+            &emsp;
+            <button type="submit" onClick={() => setEdit(null)}>
+              Cancel
+            </button>
+          </form>
         )}
         <table class="container">
-          <h2>Suppliers</h2>
+          <h3>Suppliers</h3>
           <tr class="responsive-table">
             <th class="col col-3">Company Name</th>
             <th class="col col-2">Address</th>

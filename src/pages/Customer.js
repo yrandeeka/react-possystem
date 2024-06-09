@@ -4,6 +4,7 @@ import { removeObject, updateObject } from "../utils/Common";
 import { Link } from "react-router-dom";
 
 function Customer() {
+  const jwtToken = localStorage.getItem("jwtToken");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [contactNo, setContactNo] = useState("");
@@ -21,12 +22,9 @@ function Customer() {
   };
 
   useEffect(() => {
-    getUsers();
+    getAllData("customers", jwtToken, setCustomers);
   }, []);
 
-  function getUsers() {
-    getAllData("customers", setCustomers);
-  }
   function clearFields() {
     setFirstName("");
     setLastName("");
@@ -55,6 +53,7 @@ function Customer() {
     create(
       event,
       "customers",
+      jwtToken,
       setCustomers,
       customers,
       customer,
@@ -74,6 +73,7 @@ function Customer() {
       event,
       "customer",
       edit,
+      jwtToken,
       customer,
       clearFields,
       updateCustomers,
@@ -82,18 +82,17 @@ function Customer() {
   }
 
   function deleteCustomer(event, id) {
-    deleteData(event, "customer", id, removeCustomers);
+    deleteData(event, "customer", id, jwtToken, removeCustomers);
   }
 
   return (
-  <div>
-     {!edit && (
-        <div>
-          <h2>Create Customer</h2>
-          <Link className="home" to="/">
-            Home
-          </Link>
+    <div>
+      <Link className="home" to="/">
+        Home
+      </Link>
+      {!edit && (
           <form className="form" onSubmit={createCustomer}>
+          <h2>Create Customer</h2>
             <div>
               <label>First name</label>
               <br />
@@ -150,12 +149,10 @@ function Customer() {
               Clear
             </button>
           </form>
-        </div>
       )}
       {edit && (
-        <div>
-          <h2>Update Customer</h2>
           <form className="form" onSubmit={updateCustomer}>
+          <h2>Update Customer</h2>
             <div>
               <label>First name</label>
               <br />
@@ -213,10 +210,9 @@ function Customer() {
               Cancel
             </button>
           </form>
-        </div>
       )}
       <table class="container">
-        <h2>Users</h2>
+        <h3>Customer List</h3>
         <tr class="responsive-table">
           <th class="col col-3">Name</th>
           <th class="col col-2">Address</th>
@@ -261,7 +257,8 @@ function Customer() {
             </tr>
           ))}
       </table>
-  </div>);
+    </div>
+  );
 }
 
 export default Customer;

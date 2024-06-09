@@ -10,6 +10,15 @@ body{
 .sidebarcontainer{
     margin: 0;
     display: flex;
+    
+}
+h2{
+  background-color: dodgerblue;
+  color: white;
+  text-align: center;
+}
+h1{
+    background-color: rgb(13, 186, 73);
 }
 main{
     width: 100%;
@@ -20,6 +29,7 @@ main{
     height: 100vh;
     transition: all 0.5s;
     margin: 0;
+    position: fixed;
 }
 
 .top_section{
@@ -50,4 +60,72 @@ main{
 .active{
     background: rgb(205, 182, 255);
     color: blue;
+}
+
+.login{
+    width: 100%;
+    height: 100vh;
+    background-image: url('../src/images/rivage-_Y9jIaBWRIE-unsplash.jpg');
+    background-size: cover;/*Ensures the image covers the whole page*/
+    background-repeat: no-repeat;
+    background-attachment: fixed;/*Makes the background image fixed on scroll*/
+    background-position: center;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+.loginContainer{
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    
+    justify-content: center;
+    /* Optional: for visual reference */
+    border: 1px solid #ccc; 
+    padding: 20px;
+    /* Optional: for a nicer look */
+    border-radius: 5px; 
+    /* Optional: for a nicer look */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+
+}
+
+.loginbtn{
+    width: 60px;
+    border-radius: 5px;
+}
+.loginForm{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* CSS */
+.logoutBtn {
+  background-color: #c2fbd7;
+  border-radius: 100px;
+  box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
+  color: green;
+  cursor: pointer;
+  display: inline-block;
+  font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+  padding: 7px 20px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 250ms;
+  border: 0;
+  font-size: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.blogoutBtn:hover {
+  box-shadow: rgba(44,187,99,.35) 0 -25px 18px -14px inset,rgba(44,187,99,.25) 0 1px 2px,rgba(44,187,99,.25) 0 2px 4px,rgba(44,187,99,.25) 0 4px 8px,rgba(44,187,99,.25) 0 8px 16px,rgba(44,187,99,.25) 0 16px 32px;
+  transform: scale(1.05) rotate(-1deg);
 }

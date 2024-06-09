@@ -1,16 +1,19 @@
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import config from "../utils/Config";
-import { useAuth } from "../utils/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../utils/AppContext";
 
 const Login=()=>{
 
-    const contextData=useAuth();//to use useAuth hook
+    //const contextData=useAuth();//to use useAuth hook
     const navigate=useNavigate();
 
     const [username,setUsername]=useState("");
     const [password,setPassword]=useState("");
+
+    const appContext=useContext(AppContext);
+    const {state,setState}=appContext;
 
     function handleLogin(e) {
         e.preventDefault();
@@ -23,13 +26,22 @@ const Login=()=>{
         axios.post(config.baseUrl+"auth/login",data)
         .then(function (response) {
             console.log(response);
-            contextData.login(response.data)
-            // login(response.data);
+
             if (response.data!=="") {
-                navigate("/");
+                setState((prevState)=>({
+                    ...prevState,
+                    jwtToken:response.data.jwtToken,
+                    isAuthenticated:true,
+                    user:response.data.user
+                }))
+                localStorage.setItem("jwtToken",response.data.jwtToken);
+                localStorage.setItem("userId",response.data.user.id);
             }
             else{
-                navigate("/login");
+                setState((prevState)=>({
+                    ...prevState,
+                    isAuthenticated:false
+                }))
             }
                 
         })
@@ -38,18 +50,18 @@ const Login=()=>{
         })
     }
     return(
-        <div>
-              <center> <h1> POS System - Login Page </h1> </center>
-              <form onSubmit={handleLogin}>
-                <div className="container">
+        <div className="login">
+              <center> <h1> POS System - Welcome! </h1> </center>
+              <form className="loginForm" onSubmit={handleLogin}>
+                <div className="loginContainer">
                     <label for="uname"><b>Username</b></label>
                     <input type="text" placeholder="Enter Username" name="uname" required
                     onChange={(e)=>setUsername(e.target.value)}/>
 
                     <label for="psw"><b>Password</b></label>
                     <input type="password" placeholder="Enter Password" name="psw" required
-                    onChange={(e)=>setPassword(e.target.value)}/>
-                    <button type="submit">Login</button>
+                    onChange={(e)=>setPassword(e.target.value)}/><br/>
+                    <button className="loginbtn" type="submit">Login</button>
                 </div>  
               </form>   
         </div>

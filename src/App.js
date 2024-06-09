@@ -1,6 +1,12 @@
 import "./App.css";
 import Users from "./pages/User";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import "../node_modules/bootstrap/dist/css/bootstrap.css";
 import Home from "./pages/Home";
 import Supplier from "./pages/Supplier";
@@ -11,12 +17,13 @@ import Payment from "./pages/Payment";
 import Invoice from "./pages/Invoice";
 import Sidebar from "./templates/sidebar";
 import Login from "./pages/Login";
+import AuthGuard from "./utils/AuthGuard";
+import GuestGuard from "./utils/GuestGuard";
 
 function App() {
-
   return (
     <div className="App">
-     <BrowserRouter>
+      <BrowserRouter>
         <MainContent />
       </BrowserRouter>
     </div>
@@ -26,35 +33,32 @@ function App() {
 function MainContent() {
   // Custom hook to get the current location
   const location = useLocation();
-
-  // Determine if the current path is '/login'
-  const isLoginPage = location.pathname === '/login';
+  const isLoginPage = location.pathname === "/login";
 
   return (
     <>
-      {isLoginPage ? (
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="*" element={<Navigate to="/login" />} />
-        </Routes>
-      ) : (
+      {console.log("isLoginPage-", isLoginPage)}
+      {!isLoginPage ? (
         <Sidebar>
-          <Routes>
-            <Route path="/users" element={<Users />} />
-            <Route path="/suppliers" element={<Supplier />} />
-            <Route path="/categories" element={<Category />} />
-            <Route path="/customers" element={<Customer />} />
-            <Route path="/items" element={<Item />} />
-            <Route path="/payments" element={<Payment />} />
-            <Route path="/invoice" element={<Invoice />} />
-            <Route path="/" element={<Home />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
+            <Routes>
+              <Route path="/users" element={<AuthGuard children={<Users />}/>} />
+              {/* <Route path="/users" element={<Users />}/> */}
+              <Route path="/suppliers" element={<AuthGuard children={<Supplier />}/>} />
+              <Route path="/categories" element={<AuthGuard children={<Category />}/>} />
+              <Route path="/customers" element={<AuthGuard children={<Customer />}/>}/>
+              <Route path="/items" element={<AuthGuard children={<Item />}/>} />
+              <Route path="/payments" element={<AuthGuard children={<Payment />}/>} />
+              <Route path="/invoice" element={<AuthGuard children={<Invoice />}/>} />
+              <Route path="/" element={<AuthGuard children={<Home />}/>} />
+            </Routes>
         </Sidebar>
+      ) : (
+          <Routes>
+            <Route path="/login" element={<GuestGuard children={<Login />}/>} />
+          </Routes>
       )}
     </>
   );
 }
-
 
 export default App;

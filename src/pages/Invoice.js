@@ -5,6 +5,8 @@ import { getAllData } from "../utils/Apiservice";
 import config from "../utils/Config";
 
 function Invoice() {
+  const jwtToken = localStorage.getItem("jwtToken");
+  const userId = localStorage.getItem("userId");
   const [cartItems, setCartItems] = useState([]);
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState([]);
@@ -19,7 +21,7 @@ function Invoice() {
   useEffect(() => {
     getUser();
     getCart();
-    getCustomers();
+    getAllData("customers", jwtToken, setCustomers);
   }, []);
 
   useEffect(() => {
@@ -30,16 +32,17 @@ function Invoice() {
     getTotalPrice(cartItems);
   }, [cartItems]);
 
-  function getCustomers() {
-    getAllData("customers", setCustomers);
-  }
-
   async function getCartItems() {
-    if (cart.id === null) {
+    if (cart.id === null || cart.id === undefined) {
       return;
     }
+    const authConfig = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    };
     await axios
-      .get("http://localhost:8080/cartitem/" + cart.id)
+      .get(config.baseUrl + "cartitem/" + cart.id, authConfig)
       .then(function (response) {
         console.log("cart item", response.data);
         setCartItems(response.data);
@@ -49,8 +52,13 @@ function Invoice() {
       });
   }
   function getCart() {
+    const authConfig = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    };
     axios
-      .get("http://localhost:8080/cart/" + 1)
+      .get(config.baseUrl + "cart/" + userId, authConfig)
       .then(function (response) {
         console.log("cart-->", response.data);
         setCart(response.data);
@@ -61,8 +69,13 @@ function Invoice() {
   }
 
   function getUser() {
+    const authConfig = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    };
     axios
-      .get("http://localhost:8080/user/" + 1)
+      .get(config.baseUrl + "user/" + userId, authConfig)
       .then(function (response) {
         console.log("user-", response.data);
         setUser(response.data);
@@ -87,7 +100,7 @@ function Invoice() {
 
   function applyDiscount(event) {
     event.preventDefault();
-    console.log("discount--",discount);
+    console.log("discount--", discount);
     if (!isNaN(discount)) {
       const priceWithDiscount = totalPrice - totalPrice * discount;
       setTotalPriceWithDiscount(priceWithDiscount);
@@ -108,6 +121,7 @@ function Invoice() {
     setCustomer("");
     setDiscount(0.0);
     setTotalPriceWithDiscount(0.0);
+    setTotalPrice(0.0);
   }
 
   function proceedPayment(event) {
@@ -122,9 +136,14 @@ function Invoice() {
       customer: customer,
       cartItems: cartItems,
     };
+    const authConfig = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+    };
 
     axios
-      .post(config.baseUrl + "invoice", customerPayment)
+      .post(config.baseUrl + "invoice", customerPayment, authConfig)
       .then(function (response) {
         setInvoice(response.data);
         clearFields();
@@ -136,7 +155,7 @@ function Invoice() {
 
   return (
     <div>
-      <Link className="payment" to="/payment">
+      <Link className="payment" to="/payments">
         Back to Cart
       </Link>
       {console.log("invoice--->", invoice)}

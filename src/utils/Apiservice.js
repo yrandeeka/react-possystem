@@ -1,8 +1,9 @@
 import axios from "axios";
 import config from "./Config";
-import { useAuth } from "./AuthContext";
 
 export function getAllData(url,jwtToken,setData) {
+  
+  console.log("jwtToken=",jwtToken);
   
   const authConfig={
     headers:{
@@ -19,11 +20,17 @@ export function getAllData(url,jwtToken,setData) {
     });
 }
 
-export function create(event,url,setData,data,inputObject,clearFields,setEdit) {
+export function create(event,url,jwtToken,setData,data,inputObject,clearFields,setEdit) {
   event.preventDefault();
 
+  const authConfig={
+    headers:{
+      Authorization:`Bearer ${jwtToken}`
+    }
+  }
+
   axios
-    .post(config.baseUrl+url, inputObject)
+    .post(config.baseUrl+url, inputObject,authConfig)
     .then(function (response) {
       clearFields();
       setData([...data,response.data])
@@ -37,10 +44,16 @@ export function create(event,url,setData,data,inputObject,clearFields,setEdit) {
     });
 }
 
-export function update(event,url,id,dataObject,clearFields,updateData,setEdit) {
+export function update(event,url,id,jwtToken,dataObject,clearFields,updateData,setEdit) {
   event.preventDefault();
+
+  const authConfig={
+    headers:{
+      Authorization:`Bearer ${jwtToken}`
+    }
+  }
   axios
-    .put(config.baseUrl+url+"/"+id, dataObject)
+    .put(config.baseUrl+url+"/"+id, dataObject,authConfig)
     .then(function (response) {
       console.log(url,response.data);
       clearFields();
@@ -52,10 +65,16 @@ export function update(event,url,id,dataObject,clearFields,updateData,setEdit) {
     });
 }
 
-export function deleteData(event, url,id,removeData) {
+export function deleteData(event, url,id,jwtToken,removeData) {
   event.preventDefault();
+
+  const authConfig={
+    headers:{
+      Authorization:`Bearer ${jwtToken}`
+    }
+  }
   axios
-    .delete(config.baseUrl+url+"/"+ id)
+    .delete(config.baseUrl+url+"/"+ id,authConfig)
     .then(function () {
       removeData(id);
     })

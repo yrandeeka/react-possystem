@@ -3,12 +3,28 @@ import "../App.css";
 import { SidebarData } from "./sidebarData";
 import config from "../utils/Config";
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AppContext } from "../utils/AppContext";
+import LogoutIcon from '@mui/icons-material/Logout';
 
 function Sidebar({ children }) {
 
   const [isOpen,setIsOpen]=useState(false);
   const toggle=()=>setIsOpen(!isOpen);
+
+  const appContext=useContext(AppContext);
+  const {state,setState}=appContext;
+
+  function logout() {
+    setState((prevState)=>({
+      ...prevState,
+      jwtToken:null,
+      isAuthenticated:false,
+      user:null
+  }))
+  localStorage.removeItem("jwtToken");
+  localStorage.removeItem("userId");
+  }
   return (
     <div className="sidebarcontainer">
       <div style={{width:isOpen?"200px":"50px"}} className="sidebar">
@@ -30,11 +46,12 @@ function Sidebar({ children }) {
             </NavLink>
           );
         })}
+
+       <button style={{display:isOpen?"block":"none"}} className="logoutBtn" onClick={logout}>Log Out</button>
+        {!isOpen && <LogoutIcon style={{color:"white",alignSelf: 'flex-end'}} onClick={logout}/>}
       </div>
 
-        
-
-      <main>{children}</main>
+      <main style={{marginLeft:isOpen?'250px':'50px'}}>{children}</main>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { create, deleteData, getAllData, update } from "../utils/Apiservice";
 import { removeObject, updateObject } from "../utils/Common";
 function Users() {
+  const jwtToken = localStorage.getItem("jwtToken");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [address, setAddress] = useState("");
@@ -25,12 +26,8 @@ function Users() {
   };
 
   useEffect(() => {
-    getUsers();
+    getAllData("users", jwtToken, setUsers);
   }, []);
-
-  function getUsers() {
-    getAllData("users", setUsers);
-  }
 
   function clearFields() {
     setFirstName("");
@@ -69,6 +66,7 @@ function Users() {
     create(
       event,
       "users",
+      jwtToken,
       setUsers,
       users,
       user,
@@ -88,6 +86,7 @@ function Users() {
       event,
       "user",
       edit,
+      jwtToken,
       user,
       clearFields,
       updateUsers,
@@ -96,18 +95,17 @@ function Users() {
   }
 
   function deleteUser(event, id) {
-    deleteData(event, "user", id, removeUsers);
+    deleteData(event, "user", id, jwtToken, removeUsers);
   }
 
   return (
     <div>
+      <Link className="home" to="/">
+        Home
+      </Link>
       {!edit && (
-        <div>
-          <h2>Create User</h2>
-          <Link className="home" to="/">
-            Home
-          </Link>
           <form className="form" onSubmit={createUser}>
+            <h2>Create User</h2>
             <div>
               <label>First name</label>
               <br />
@@ -185,12 +183,11 @@ function Users() {
               Clear
             </button>
           </form>
-        </div>
       )}
       {edit && (
-        <div>
-          <h2>Update User</h2>
+
           <form className="form" onSubmit={updateUser}>
+            <h2>Update User</h2>
             <div>
               <label>First name</label>
               <br />
@@ -263,10 +260,9 @@ function Users() {
               Cancel
             </button>
           </form>
-        </div>
       )}
       <table class="container">
-        <h2>Users</h2>
+        <h3>Users</h3>
         <tr class="responsive-table">
           <th class="col col-3">Name</th>
           <th class="col col-2">Address</th>

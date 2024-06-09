@@ -5,6 +5,8 @@ import Category from "./Category";
 import { removeObject, updateObject } from "../utils/Common";
 
 function Item() {
+  const jwtToken = localStorage.getItem("jwtToken");
+  const userId = localStorage.getItem("userId");
   const unitsArr = ["kg", "litre", "milliliter", "g", "items"];
   const [name, setName] = useState("");
   const [itemId, setItemId] = useState("");
@@ -75,24 +77,24 @@ function Item() {
   }
 
   function getCategories() {
-    getAllData("categories", setCategories);
+    getAllData("categories", jwtToken,setCategories);
   }
   function getItems() {
-    getAllData("items", setItems);
+    getAllData("items", jwtToken,setItems);
   }
 
   function getSuppliers() {
-    getAllData("suppliers", setSuppliers);
+    getAllData("suppliers", jwtToken,setSuppliers);
   }
   function saveItem(event) {
     setStatus("stock in");
-    create(event, "items", setItems, items, item, clearFields, setEdit);
+    create(event, "items", jwtToken,setItems, items, item, clearFields, setEdit);
   }
   function updateItems(updateItem) {
     updateObject(items, updateItem, setItems);
   }
   function updateItem(event) {
-    update(event, "item", edit, item, clearFields, updateItems, setEdit);
+    update(event, "item", edit,jwtToken, item, clearFields, updateItems, setEdit);
   }
 
   function clearFields() {
@@ -112,7 +114,7 @@ function Item() {
     console.log("itemSts-",itemSts);
     setStockStatus(itemSts,status);
     console.log("after update item-",item);
-    update(event, "item/status", itemId, item, clearFields, updateItems, setEdit);
+    update(event, "item/status", itemId,jwtToken,item, clearFields, updateItems, setEdit);
   }
 
   function setStockStatus(itemOld,statusNew) {
@@ -232,7 +234,6 @@ function Item() {
         </form>
       )}
       {edit && (
-        <div>
           <form className="form" onSubmit={updateItem}>
             <h2>Update Item</h2>
             <div>
@@ -341,10 +342,9 @@ function Item() {
               </button>
             </div>
           </form>
-        </div>
       )}
       <table class="container">
-        <h2>Items Stock-IN</h2>
+        <h3>Items Stock-IN</h3>
         <tr class="responsive-table">
           <th class="col col-3">Item</th>
           <th class="col col-2">Category</th>
@@ -391,7 +391,7 @@ function Item() {
           ))}
       </table>
       <table class="container">
-        <h2>Items Stock-OUT</h2>
+        <h3>Items Stock-OUT</h3>
         <tr class="responsive-table">
           <th class="col col-3">Item</th>
           <th class="col col-2">Category</th>

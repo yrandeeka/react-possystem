@@ -8,6 +8,8 @@ import axios from "axios";
 import config from "../utils/Config";
 
 function Payment() {
+  const jwtToken = localStorage.getItem("jwtToken");
+  const userId = localStorage.getItem("userId");
   const [items, setItems] = useState([]);
   const [user, setUser] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -18,6 +20,11 @@ function Payment() {
   const toast = useRef(null);
 
   const navigate = useNavigate();
+  const authConfig = {
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    },
+  };
 
   useEffect(() => {
     getItems();
@@ -34,7 +41,7 @@ function Payment() {
       return;
     }
     await axios
-      .get("http://localhost:8080/cartitem/" + cart.id)
+      .get(config.baseUrl+"cartitem/" + cart.id,authConfig)
       .then(function (response) {
         console.log("cart item", response.data);
         setCartItems(response.data);
@@ -47,7 +54,7 @@ function Payment() {
   function getUser() {
 
     axios
-      .get("http://localhost:8080/user/" + 1)
+      .get(config.baseUrl+"user/" + userId,authConfig)
       .then(function (response) {
         console.log("user-", response.data);
         setUser(response.data);
@@ -58,7 +65,7 @@ function Payment() {
   }
   function getCart() {
     axios
-      .get("http://localhost:8080/cart/" + 1)
+      .get(config.baseUrl+"cart/" + userId,authConfig)
       .then(function (response) {
         console.log("cart-->", response.data);
         setCart(response.data);
@@ -83,7 +90,7 @@ function Payment() {
     }
   }, [items]);
   function getItems() {
-    getAllData("items", setItems);
+    getAllData("items", jwtToken,setItems);
   }
   function handlePurchaseQTy(event, id) {
     setCartQty([{ id: id, qty: parseFloat(event.target.value) }]);
@@ -120,7 +127,7 @@ function Payment() {
 
       if (cartItems.findIndex((cItem) => cItem.item.id === cartItem.itemId) === -1) {
         axios
-          .post("http://localhost:8080/cartitem", cartItem)
+          .post(config.baseUrl+"cartitem", cartItem,authConfig)
           .then(function (response) {
             console.log(response.data);
             clearFields();
@@ -132,7 +139,7 @@ function Payment() {
           });
       } else {
         axios
-          .put("http://localhost:8080/updatecartitem", cartItem)
+          .put(config.baseUrl+"updatecartitem", cartItem,authConfig)
           .then(function (response) {
             console.log(response.data);
             clearFields();
@@ -155,15 +162,15 @@ function Payment() {
   }
 
   function createCart(event) {
-    create(event, "carts", setCart, cart, user, clearFields, null);
+    create(event, "carts", jwtToken,setCart, cart, user, clearFields, null);
   }
 
   function removeCartItem(event,itemId) {
     event.preventDefault();
 
-    axios.put(config.baseUrl+"removecartitem/"+itemId)
+    axios.put(config.baseUrl+"removecartitem/"+itemId,null,authConfig)
     .then(function (response) {
-      console.log("removeItem",);
+      console.log("removeItem");
       const rvmdItem=response.data;
       if (rvmdItem.id===itemId) {
         removeObject(itemId,cartItems,setCartItems);  
@@ -179,19 +186,17 @@ function Payment() {
     <div>
       <Link className="home" to="/">
         Home
-      </Link>
-      {tempCart.length > 0 && (
+      </Link>&emsp;&emsp;
+      {cart.length === 0 && (
         <button type="submit" onClick={createCart}>
           {" "}
-          Save Cart
+          Create Cart
         </button>
       )}
-      {cart.length > 1 && <button> View Cart</button>}
-      {console.log(cart)}
       {categories &&
         categories.map((category) => (
           <table class="container">
-            <h2>{`${category}`}</h2>
+            <h4>{`${category}`}</h4>
             <tr class="responsive-table">
               <th class="col col-2">Item</th>
               <th class="col col-2">Supplier</th>
@@ -225,7 +230,7 @@ function Payment() {
                         class="btn btn-primary"
                         onClick={(event) => addToCart(event, item)}
                       >
-                        {cart && "Add to Cart"}
+                        Add to Cart
                       </button>
                       <Toast ref={toast} />
                     </td>

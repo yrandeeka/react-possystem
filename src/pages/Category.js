@@ -1,30 +1,20 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { create, deleteData, getAllData, update } from "../utils/Apiservice";
 import { removeObject, updateObject } from "../utils/Common";
 import { Link } from "react-router-dom";
-import { useAuth } from "../utils/AuthContext";
 
 function Category() {
-
-  const { isAuthenticated, jwtToken } = useAuth();
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState(null);
   const [edit, setEdit] = useState(null);
-
+  const jwtToken = localStorage.getItem("jwtToken");
   const category = {
     description: description,
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      getCategories();
-    }
+    getAllData("categories", jwtToken, setCategories);
   }, []);
-
-  function getCategories() {
-    getAllData("categories",jwtToken, setCategories);
-  }
 
   function clearFields() {
     setDescription("");
@@ -38,6 +28,7 @@ function Category() {
     create(
       event,
       "categories",
+      jwtToken,
       setCategories,
       categories,
       category,
@@ -56,8 +47,9 @@ function Category() {
   function updateCategory(event) {
     update(
       event,
-      "user",
+      "category",
       edit,
+      jwtToken,
       category,
       clearFields,
       updateCategories,
@@ -66,18 +58,17 @@ function Category() {
   }
 
   function deleteUser(event, id) {
-    deleteData(event, "category", id, removeCategories);
+    deleteData(event, "category", id, jwtToken, removeCategories);
   }
 
   return (
     <div className="category">
+      <Link className="home" to="/">
+        Home
+      </Link>
       {!edit && (
-        <div>
-          <h2>Create Category</h2>
-          <Link className="home" to="/">
-            Home
-          </Link>
           <form className="form" onSubmit={createCategory}>
+          <h2>Create Category</h2>
             <div>
               <label>Description</label>
               <br />
@@ -88,41 +79,36 @@ function Category() {
                 onChange={handleDescription}
               ></input>
             </div>
+            <br />
             <button type="submit">Save</button>&emsp;
             <button type="submit" onClick={clearFields}>
               Clear
             </button>
           </form>
-        </div>
       )}
       {edit && (
-        <div>
+        <form className="form" onSubmit={updateCategory}>
           <h2>Update Category</h2>
-          <Link className="home" to="/">
-            Home
-          </Link>
-          <form className="form" onSubmit={updateCategory}>
-            <div>
-              <label>Description</label>
-              <br />
-              <input
-                type="text"
-                value={description !== null ? description : ""}
-                required
-                onChange={handleDescription}
-              ></input>
-            </div>
+          <div>
+            <label>Description</label>
             <br />
-            <button type="submit">Update</button>
-            &emsp;
-            <button type="submit" onClick={() => setEdit(null)}>
-              Cancel
-            </button>
-          </form>
-        </div>
+            <input
+              type="text"
+              value={description !== null ? description : ""}
+              required
+              onChange={handleDescription}
+            ></input>
+          </div>
+          <br />
+          <button type="submit">Update</button>
+          &emsp;
+          <button type="submit" onClick={() => setEdit(null)}>
+            Cancel
+          </button>
+        </form>
       )}
       <table>
-        <h2>Categories</h2>
+        <h3>Categories</h3>
       </table>
       <tr class="responsive-table">
         <th class="col col-3">Description</th>
